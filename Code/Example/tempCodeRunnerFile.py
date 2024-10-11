@@ -1,0 +1,1 @@
+serial.Serial(port='COM6',   baudrate=115200, timeout=.1)
