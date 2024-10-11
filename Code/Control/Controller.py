@@ -1,22 +1,11 @@
 #import library 
 import time
-import serial 
+import serial
+from command import *
 
 # connect with arduino
 # bukhum =  serial.Serial(port='COM6',   baudrate=115200, timeout=.1)
 time.sleep(1)
-
-# send command & echo wiht arduino
-def send_command(mess):
-    print(mess)
-    # bukhum.write(mess)
-    # time.sleep(0.05)
-    # data = bukhum.readline()
-    # return   data
-    pass
-
-def get_info() : # \x00 in byte
-    send_command(bytes('\x00', 'utf-8'))
 
 def split_command(command) : 
         # find function name & parameter from command 
@@ -36,16 +25,22 @@ def main():
         func, parameter = split_command(command)
 
         # Show function name and each paraneter 
-        print(f'function = {func} all parameter {parameter}')
+        """ print(f'function = {func} all parameter {parameter}')
         for i,p in enumerate(parameter) :
-            print(f'parameter {i+1} : {p} : {type(p)}')
+            print(f'parameter {i+1} : {p} : {type(p)}') """
         
-        """ match command :
-            case 'getinfo' :
+        match func : 
+            case 'getinfo' : 
                 get_info()
+            case 'home' : 
+                  home()
+            case 'goto' : 
+                  go_to(parameter)
+            case 'repeatgoto': 
+                  repeat_go_to(parameter)
             case _ :
-                print("NOPE") """
-        # echo   = send_command(command)
-        # print(echo)
+                print('Not have this command in list')
+        # print(parameter_to_bytes(parameter))
+
 
 main()
