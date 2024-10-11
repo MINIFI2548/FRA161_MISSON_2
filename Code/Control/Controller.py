@@ -2,9 +2,9 @@
 import time
 import serial
 from command import *
+from connectArduino import*
 
 # connect with arduino
-# bukhum =  serial.Serial(port='COM6',   baudrate=115200, timeout=.1)
 time.sleep(1)
 
 def split_command(command) : 
