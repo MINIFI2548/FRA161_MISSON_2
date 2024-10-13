@@ -38,6 +38,10 @@ def main():
                   go_to(parameter)
             case 'repeatgoto': 
                   repeat_go_to(parameter)
+            case 'motoroff':
+                  motor_off()
+            case 'motoron' :
+                  motor_on()
             case _ :
                 print('Not have this command in list')
         # print(parameter_to_bytes(parameter))

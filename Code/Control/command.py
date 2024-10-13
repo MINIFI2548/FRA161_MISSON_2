@@ -42,3 +42,11 @@ def repeat_go_to(parameter) :   # \x03 in byte
     command += parameter_to_bytes(parameter[0:2])
     send_command(command)
     # print(f"go to {parameter[0]} {parameter[1]} times")
+
+def motor_off() :               # \x04 in byte
+    command = int(4).to_bytes(1, 'big')
+    send_command(command)
+
+def motor_on() :                # \x05 in byte
+    command = int(5).to_bytes(1, 'big')
+    send_command(command)
