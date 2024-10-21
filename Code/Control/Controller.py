@@ -18,20 +18,24 @@ def split_command(command) :
 
 def main():
     while True:
-        # input command from terminal
-        command = input("Input command > ")
+      if(bukhum.in_waiting > 0 ) :
+            echo = bukhum.read_all()
+            print(echo.decode("utf-8"))
+      else:
+            # input command from terminal
+            command = input("Input command > ")
 
-        # split command 
-        func, parameter = split_command(command)
+      # split command 
+      func, parameter = split_command(command)
 
         # Show function name and each paraneter 
-        """ print(f'function = {func} all parameter {parameter}')
-        for i,p in enumerate(parameter) :
-            print(f'parameter {i+1} : {p} : {type(p)}') """
+      #   print(f'function = {func} all parameter {parameter}')
+      #   for i,p in enumerate(parameter) :
+      #       print(f'parameter {i+1} : {p} : {type(p)}')
         
-        match func : 
+      match func : 
             case 'getinfo' : 
-                get_info()
+                  get_info()
             case 'home' : 
                   home()
             case 'goto' : 
@@ -43,8 +47,8 @@ def main():
             case 'motoron' :
                   motor_on()
             case _ :
-                print('Not have this command in list')
-        # print(parameter_to_bytes(parameter))
+                  print('Not have this command in list')
+            # print(parameter_to_bytes(parameter))
 
 
 main()

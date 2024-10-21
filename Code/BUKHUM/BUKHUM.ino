@@ -6,31 +6,42 @@
     Motor Speed (RPM) = (Step Frequency (Hz) x 60 ) / Driver Resolution */
 #include <AccelStepper.h>
 
-#define ENB_PIN 2 
-#define DIR_PIN 3
-#define PUL_PIN 4 
+#define ENB_PIN A0 
+#define DIR_PIN A1
+#define PUL_PIN A2
+#define LIMIT_PIN 13
 
-#define GEAR_RATIO 0.2
-#define MAX_SPEED_RPM 300       // RPM
+#define GEAR_RATIO 1/9
+#define MAX_SPEED_RPM 100       // RPM
 #define MIN_SPEED_RPM 50        // RPM
-#define ACCELERATION_RPM 5000   // RPM^2
-#define PULSE_PER_REV 200
+#define ACCELERATION_RPS 50   //RPS^2
+#define PULSE_PER_REV 3200
 #define END_STOP_POSITION 0 // step
+
+
 
 AccelStepper stepper(AccelStepper::DRIVER, PUL_PIN, DIR_PIN);
 
-const int MAX_SPEED_SPS = MAX_SPEED_RPM / 60 * PULSE_PER_REV;
-const int MIN_SPEED_SPS = MIN_SPEED_RPM / 60 * PULSE_PER_REV;
-const int ACCELERATION_SPS = MIN_SPEED_RPM / 3600 * PULSE_PER_REV;
+const int MAX_SPEED_SPS = MAX_SPEED_RPM  / 60 * PULSE_PER_REV;
+const int MIN_SPEED_SPS = MIN_SPEED_RPM  / 60 *  PULSE_PER_REV;
+const int ACCELERATION_SPS = ACCELERATION_RPS * PULSE_PER_REV;
 
+int homeStepPosition;
 void setup() {
   Serial.begin(115200);
 
   stepper.setEnablePin(ENB_PIN);
   stepper.setPinsInverted(false, false, false, false, true);
   stepper.enableOutputs();
-  stepper.setAcceleration(ACCELERATION_SPS);
+  stepper.setMinPulseWidth(20);
   stepper.setMaxSpeed(MAX_SPEED_SPS);
+  stepper.setAcceleration(ACCELERATION_SPS);
+  stepper.setCurrentPosition(0);
+  digitalWrite(PUL_PIN, LOW);
+  pinMode(LIMIT_PIN, INPUT_PULLUP);
+
+  // home();
+  // goToPoint(90);
 }
 
 void  loop() {
@@ -52,8 +63,10 @@ void  loop() {
       case 0:   //get info
         break;
       case 1:   //home
+        home();
         break;
       case 2:   //go to
+        goToPoint(parameter[0]);
         break;
       case 3:   //repeat go to
         break;
@@ -72,4 +85,41 @@ void motorOff(){
 }
 void motorOn(){
     stepper.enableOutputs();
+}
+
+void home(){
+  stepper.setSpeed(-10 * PULSE_PER_REV);
+  while (!digitalRead(LIMIT_PIN)) {
+    stepper.runSpeed();
+  }
+  stepper.stop();
+  // Serial.println("done");
+  delay(1000);
+  gotStep(stepper.currentPosition() + 1000);
+  // Serial.println("done");
+  delay(1000);
+  stepper.setSpeed(-0.5 * PULSE_PER_REV);
+  while (!digitalRead(LIMIT_PIN)) {
+    stepper.runSpeed();
+    // Serial.println((digitalRead(LIMIT_PIN)));
+  }
+  // Serial.println("done");
+  stepper.setCurrentPosition(0);
+  homeStepPosition = stepper.currentPosition();
+  // Serial.println(homeStepPosition);
+}
+
+void goToPoint(int point){
+  // float position = (((point) * 180 / 36) * PULSE_PER_REV * 9  / 360) ;
+  float position = (((point)) * PULSE_PER_REV / 8) ;
+  // Serial.println(position);
+  gotStep(position);
+}
+
+void gotStep(long position){
+  stepper.moveTo(position);
+  while (stepper.currentPosition() != stepper.targetPosition()) {
+    stepper.runToPosition();
+  }
+  stepper.stop();
 }
