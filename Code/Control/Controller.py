@@ -13,7 +13,7 @@ def split_command(command) :
         function_name, parameter = command.strip().split(':')
         function_name = "".join([c for c in function_name if c.isalpha()]).lower()
         # extrace parameter 
-        parameter = [int(p) for p in parameter.split() if (not p.isspace())]
+        parameter = [float(p) for p in parameter.split() if (not p.isspace())]
         return (function_name, parameter)
 
 def main():
@@ -46,6 +46,8 @@ def main():
                   motor_off()
             case 'motoron' :
                   motor_on()
+            case 'pen' :
+                  pen()
             case _ :
                   print('Not have this command in list')
             # print(parameter_to_bytes(parameter))

@@ -2,7 +2,7 @@ import serial
 import time
 
 # connect with arduino
-bukhum =  serial.Serial(port='COM6',   baudrate=115200, timeout=.1)
+bukhum =  serial.Serial(port='COM3',   baudrate=115200, timeout=.1)
 
 # send command & echo wiht arduino
 def send_command(mess):
