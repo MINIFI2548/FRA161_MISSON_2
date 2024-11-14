@@ -16,7 +16,7 @@ def check_number_parameter(parameter, size) :
 
 """ list of command """
 
-def get_info() :                # \x00 in byte
+def hoget_info() :                # \x00 in byte
     command = int(0).to_bytes(1, 'big')
     send_command(command)
 

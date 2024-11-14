@@ -17,9 +17,9 @@
 #define LIMIT_PIN 13
 
 #define GEAR_RATIO 1/9
-#define MAX_SPEED_RPM 15000       // RPM
+#define MAX_SPEED_RPM 500       // RPM
 #define MIN_SPEED_RPM 50        // RPM
-#define ACCELERATION_RPS 500000   //RPS^2
+#define ACCELERATION_RPS 50000000   //RPS^2
 #define PULSE_PER_REV 3200
 #define END_STOP_POSITION 0 // step
 
@@ -33,23 +33,20 @@ const int MAX_SPEED_SPS = MAX_SPEED_RPM  / 60 * PULSE_PER_REV;
 const int MIN_SPEED_SPS = MIN_SPEED_RPM  / 60 *  PULSE_PER_REV;
 const int ACCELERATION_SPS = ACCELERATION_RPS * PULSE_PER_REV;
 
-int homeStepPosition;
 void setup() {
   Serial.begin(115200);
 
   stepper.setEnablePin(SPIN_ENB_PIN);
-  stepper.setPinsInverted(false, false, false, false, true);
+  stepper.setPinsInverted(false, false, true);
   stepper.enableOutputs();
-  stepper.setMinPulseWidth(20);
-  stepper.setMaxSpeed(MAX_SPEED_SPS);
-  stepper.setAcceleration(ACCELERATION_SPS);
+  stepper.setMaxSpeed(6400);
+  stepper.setAcceleration(50000000);
   stepper.setCurrentPosition(0);
 
   pen.setEnablePin(PEN_ENB_PIN);
   pen.setPinsInverted(false, false, true);
   pen.enableOutputs();
-  pen.setMinPulseWidth(20);
-  pen.setMaxSpeed(3200);
+  pen.setMaxSpeed(1200);
   pen.setAcceleration(9000);
   pen.setCurrentPosition(0);
 
@@ -60,7 +57,7 @@ void setup() {
   // repeatGoto(10800, 10);
   // penDown();
   // home();
-  // goToPoint(90);
+  // goToPoint(7200);
   // motorOff();
 }
 
@@ -119,35 +116,33 @@ void home(){
     gotoStep(300);
   }
   stepper.setSpeed(-500);
-  while (digitalRead(LIMIT_PIN)) {
-    stepper.runSpeed();
-  }
-  stepper.stop();
-  // Serial.println("done");
-  delay(100);
-  stepper.setSpeed(400);
   while (!digitalRead(LIMIT_PIN)) {
     stepper.runSpeed();
   }
   stepper.stop();
-  // gotoStep(stepper.currentPosition() + 500);
   // Serial.println("done");
   delay(100);
-  stepper.setSpeed(-200);
-  while (digitalRead(LIMIT_PIN)) {
-    stepper.runSpeed();
-    // Serial.println((digitalRead(LIMIT_PIN)));
-  }
-  delay(500);
-  // Serial.println("done");
+  // stepper.setSpeed(-500);
+  // while (!digitalRead(LIMIT_PIN)) {
+  //   stepper.runSpeed();
+  // }
+  // stepper.stop();
+  // // gotoStep(stepper.currentPosition() + 500);
+  // // Serial.println("done");
+  // delay(100);
+  // stepper.setSpeed(300);
+  // while (digitalRead(LIMIT_PIN)) {
+  //   stepper.runSpeed();
+  //   // Serial.println((digitalRead(LIMIT_PIN)));
+  // }
+  // delay(500);
   stepper.setCurrentPosition(0);
-  homeStepPosition = stepper.currentPosition();
-  // Serial.println(homeStepPosition);
+  Serial.println(stepper.currentPosition());
   homed = true;
 }
 
 void goToPoint(int point){
-  gotoStep(point);
+  gotoStep(point + 100);
   // penDown();
 }
 
@@ -168,6 +163,7 @@ void gotoStep(long position){
     stepper.runToPosition();
   }
   stepper.stop();
+  Serial.println(stepper.currentPosition());
 }
 
 void penDown(){
